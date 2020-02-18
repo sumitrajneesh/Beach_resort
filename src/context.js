@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import items from "./data";
 
 const RoomContext = React.createContext();
 
@@ -6,9 +7,36 @@ const RoomContext = React.createContext();
 
 class RoomProvider extends Component {
   state = {
-    greeting: "hello",
-    name: "Sumit"
+    rooms: [],
+    sortedRooms: [],
+    featuredRooms: [],
+    loading: true
   };
+
+  //get data
+
+  componentDidMount() {
+    //this.getData
+    let rooms = this.formateData(items);
+    let featuredRooms = rooms.filter(room => room.featured === true);
+    this.setState({
+      rooms,
+      featuredRooms,
+      sortedRooms: rooms,
+      loading: false
+    });
+  }
+
+  formateData(items) {
+    let tempItems = items.map(item => {
+      let id = item.sys.id;
+      let images = item.fields.images.map(image => image.fields.file.url);
+      let room = { ...item.fields, images, id };
+      return room;
+    });
+
+    return tempItems;
+  }
   render() {
     return (
       <RoomContext.Provider value={{ ...this.state }}>
